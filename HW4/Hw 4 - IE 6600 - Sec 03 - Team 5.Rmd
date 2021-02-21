@@ -1,0 +1,26 @@
+---
+title: "HW 4 - IE 6600 - Sec 03 - Team 5"
+author: "Kirti Aggarwal"
+date: "2/19/2021"
+output: pdf_document
+---
+
+```{r}
+# Set the R environment to your current directory
+#setwd("/Users/kirtiagwl1595/Desktop/Computation and Data Visualisation/Assignment/Assignment 4")
+```
+
+```{r}
+# Adding the required R packages
+library(tidyverse)
+library(lubridate)
+library(corrplot)
+```
+
+```{r}
+# Adding datasets to R
+ad.df <- read_csv("airlines_delay.csv")#, na.strings = "")
+wage.df <- read_csv("wages_jobs.csv")#, na.strings = "")
+opt.df <- read_csv("occupations.csv")#, na.strings = "")
+```
+
