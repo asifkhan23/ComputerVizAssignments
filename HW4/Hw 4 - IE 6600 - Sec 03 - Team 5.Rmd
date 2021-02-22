@@ -15,12 +15,60 @@ output: pdf_document
 library(tidyverse)
 library(lubridate)
 library(corrplot)
+library(gridExtra)
+library(scales)
+library(reshape2)
 ```
 
 ```{r}
 # Adding datasets to R
-ad.df <- read_csv("airlines_delay.csv")#, na.strings = "")
-wage.df <- read_csv("wages_jobs.csv")#, na.strings = "")
-opt.df <- read_csv("occupations.csv")#, na.strings = "")
+ad.df <- read_csv("airlines_delay.csv")
+wage.df <- read_csv("wages_jobs.csv")
+opt.df <- read_csv("occupations.csv")
 ```
 
+library(magrittr)
+library(tidyr)
+library(ggplot2)
+library(gridExtra)
+library(dplyr)
+
+
+```{r}
+df_air_1 <- ad.df %>% 
+    select(carrier_delay, late_aircraft_delay, nas_delay, security_delay, weather_delay) %>% 
+    drop_na()
+delay_long <- gather(df_air_1)
+PlotFunc<- function(DF)
+{
+  p<-ggplot(DF, aes(x =value, fill=key)) +
+    geom_density(alpha=0.5) +
+    scale_x_log10(breaks = trans_breaks("log10", function(x) 10^x),
+                  labels = trans_format("log10", math_format(10^.x))) + 
+    ggtitle("Density plot of carrier delays in mins") + 
+    xlab("log delay in mins") + 
+    ylab("Density")
+p
+}
+PlotFunc(delay_long)                                       
+```
+
+```{r}
+df1 <- ad.df %>% 
+  select(7:16) %>% 
+  drop_na()
+M <- cor(df1)
+corrplot.mixed(M,lower="number",upper="circle",lower.col="black",tl.pos="d",number.cex=0.6,tl.cex=0.65,)
+
+
+```
+
+```{r}
+task5 <- wage.df %>% 
+  filter(Year == 2018) %>% 
+  group_by(`ID PUMS Occupation`)
+  
+ggplot(task5, aes(x=`PUMS Occupation`, y=`Average Wage`, fill=Gender)) +
+  geom_bar()
+
+```
