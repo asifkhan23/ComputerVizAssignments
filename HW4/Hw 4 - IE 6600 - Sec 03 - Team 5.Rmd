@@ -8,7 +8,14 @@ output: pdf_document
 ```{r}
 # Set the R environment to your current directory
 #setwd("/Users/kirtiagwl1595/Desktop/Computation and Data Visualisation/Assignment/Assignment 4")
+setwd("/Users/asif/NEU/IE-6600 - Comp Viz/Assignment/ComputerVizAssignments/HW4")
 ```
+
+## Packages to be installed
+```{r}
+install.packages("ggalluvial")
+```
+
 
 ```{r}
 # Adding the required R packages
@@ -18,6 +25,12 @@ library(corrplot)
 library(gridExtra)
 library(scales)
 library(reshape2)
+library(magrittr)
+library(tidyr)
+library(ggplot2)
+library(dplyr)
+library(corrr)
+library(ggalluvial)
 ```
 
 ```{r}
@@ -72,3 +85,37 @@ ggplot(task5, aes(x=`PUMS Occupation`, y=`Average Wage`, fill=Gender)) +
   geom_bar()
 
 ```
+
+## Task 3
+### From wages_jobs.csv generate a heat map as shown below. The variable Difference is defined as the difference between number of male employees and the number of female employees. A negative value indicate more number of female than male employees. In addition to the plot critique the below visualization:
+
+### • Transform the x axis using a log10 to better visualize the data spread.
+
+```{r}
+
+wage.df %>% 
+  filter(Gender == "Female") %>% 
+  summarise(noOfFemales = n())
+
+wage.df %>% 
+  filter(Gender == "Male") %>% 
+  summarise(noOfMales = n())
+
+ggplot(data = as.data.frame(wage.df), aes(x=Year, y=`PUMS Occupation`, fill = Gender)) + 
+        geom_tile()
+
+```
+
+## Task 4
+### From wages_jobs.csv generate the following alluvial chart.
+### • Read documentation of geom_alluvial and geom_stratum to solve this task
+
+```{r}
+ggplot(as.data.frame(wage.df), aes(y =`Total Population`, axis1 = `PUMS Occupation`, axis2 = Year)) +
+  geom_alluvium(aes(fill = Gender), width = 1/12) +
+  geom_stratum(width = 1/4) +
+  scale_x_discrete(limits = c("Occupation", "Gender"), expand = c(.1, 0)) +
+  geom_text(stat = "stratum", aes(label = after_stat(stratum))) +
+  theme_minimal()
+```
+
