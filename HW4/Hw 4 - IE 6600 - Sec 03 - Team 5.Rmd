@@ -1,6 +1,6 @@
 ---
 title: "HW 4 - IE 6600 - Sec 03 - Team 5"
-author: "Kirti Aggarwal"
+author: "Rahul Dixit, Kirti Aggarwal, Asif Khan"
 date: "2/19/2021"
 output: pdf_document
 ---
@@ -31,59 +31,106 @@ library(ggplot2)
 library(dplyr)
 library(corrr)
 library(ggalluvial)
+library(treemapify)
 ```
 
 ```{r}
 # Adding datasets to R
-ad.df <- read_csv("airlines_delay.csv")
+air_delay.df <- read_csv("airlines_delay.csv")
 wage.df <- read_csv("wages_jobs.csv")
-opt.df <- read_csv("occupations.csv")
+occup.df <- read_csv("occupations.csv")
 ```
 
-library(magrittr)
-library(tidyr)
-library(ggplot2)
-library(gridExtra)
-library(dplyr)
 
 
-```{r}
-df_air_1 <- ad.df %>% 
-    select(carrier_delay, late_aircraft_delay, nas_delay, security_delay, weather_delay) %>% 
+```{r Task 1, echo=FALSE, warning=FALSE}
+# Creating a subset of airline delay dataset as defined in the problem statement
+df_air_1 <- air_delay.df %>% 
+    select(carrier_delay, 
+           late_aircraft_delay, 
+           nas_delay, 
+           security_delay, 
+           weather_delay) %>% 
     drop_na()
-delay_long <- gather(df_air_1)
-PlotFunc<- function(DF)
+task1 <- gather(df_air_1)
+# Defining a function to create a density plot 
+densityPlotFunc<- function(dataFrame)
 {
-  p<-ggplot(DF, aes(x =value, fill=key)) +
+  densityPlot <- ggplot(dataFrame, 
+                        aes(x=value,
+                            fill=key)) +
     geom_density(alpha=0.5) +
-    scale_x_log10(breaks = trans_breaks("log10", function(x) 10^x),
-                  labels = trans_format("log10", math_format(10^.x))) + 
+    scale_x_log10(breaks=trans_breaks("log10", 
+                                      function(x) 10^x),
+                  labels=trans_format("log10", 
+                                      math_format(10^.x))) + 
     ggtitle("Density plot of carrier delays in mins") + 
     xlab("log delay in mins") + 
     ylab("Density")
-p
+densityPlot
 }
-PlotFunc(delay_long)                                       
+# Using custom function to plot for subset task1
+densityPlotFunc(task1)                                       
 ```
 
-```{r}
-df1 <- ad.df %>% 
+```{r Task 2, echo=FALSE, warning=FALSE}
+# Creating a subset of airline delay dataset as defined in the problem statement
+task2 <- air_delay.df %>% 
   select(7:16) %>% 
   drop_na()
-M <- cor(df1)
-corrplot.mixed(M,lower="number",upper="circle",lower.col="black",tl.pos="d",number.cex=0.6,tl.cex=0.65,)
-
-
+# Creating a correlation matrix for subset task2
+correlationTask2 <- cor(task2)
+# correlation matrix plot using corrplot package
+corrplot.mixed(correlationTask2,
+               lower="number",
+               upper="circle",
+               lower.col="black",
+               tl.pos="d",
+               number.cex=0.6,
+               tl.cex=0.65)
 ```
 
-```{r}
+```{r Task 5, echo=FALSE, warning=FALSE}
+# Creating a subset of occupation dataset as defined in the problem statement
 task5 <- wage.df %>% 
   filter(Year == 2018) %>% 
-  group_by(`ID PUMS Occupation`)
-  
-ggplot(task5, aes(x=`PUMS Occupation`, y=`Average Wage`, fill=Gender)) +
-  geom_bar()
+  select(`PUMS Occupation`, 
+         `Average Wage`, 
+         Gender) %>% 
+  group_by(`PUMS Occupation`)
+# stacked bar plot using ggplot package 
+ggplot(task5, aes(fill=Gender, 
+                  y=`Average Wage`, 
+                  x=reorder(`PUMS Occupation`,-`Average Wage`))) +
+  geom_bar(stat="identity") +
+  labs(x = "Occupation", 
+       y = "Average Wage", 
+       title = "Stacked Bar Plot of Gender on basis of Wages vs Occupation") +
+  theme_minimal(base_size = 8) +
+  theme(axis.text.x = element_text(angle = 45, 
+                                   hjust = 1))
+```
 
+```{r Task 6, echo=FALSE, warning=FALSE}
+# Creating a subset of occupation dataset as defined in the problem statement
+task6 <- occup.df %>% 
+  group_by(`Detailed Occupation`, 
+           `Major Occupation Group`) %>% 
+  summarise(Workforce=sum(`Total Population`, 
+                          na.rm = TRUE), 
+            .groups = "drop")
+# tree map plot using ggplot and treemapify packages
+ggplot(task6, aes(area=Workforce,
+                  fill=`Major Occupation Group`,
+                  label=`Detailed Occupation`,
+                  subgroup=`Major Occupation Group`)) + 
+  geom_treemap() +
+  labs(title = "Workforce Distribution by Detailed Workforce 2018") +
+  geom_treemap_text(fontface = "italic",
+                        colour = "white",
+                        place = "centre",
+                        grow = F,
+                        reflow = T) 
 ```
 
 ## Task 3
@@ -118,4 +165,5 @@ ggplot(as.data.frame(wage.df), aes(y =`Total Population`, axis1 = `PUMS Occupati
   geom_text(stat = "stratum", aes(label = after_stat(stratum))) +
   theme_minimal()
 ```
+
 
