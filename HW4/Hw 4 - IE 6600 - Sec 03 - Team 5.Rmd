@@ -5,20 +5,14 @@ date: "2/19/2021"
 output: pdf_document
 ---
 
-```{r}
+```{r Set Current Directory, echo=FALSE, warning=FALSE}
 # Set the R environment to your current directory
 #setwd("/Users/kirtiagwl1595/Desktop/Computation and Data Visualisation/Assignment/Assignment 4")
-setwd("/Users/asif/NEU/IE-6600 - Comp Viz/Assignment/ComputerVizAssignments/HW4")
+#setwd("/Users/asif/NEU/IE-6600 - Comp Viz/Assignment/ComputerVizAssignments/HW4")
 ```
 
-## Packages to be installed
-```{r}
-install.packages("ggalluvial")
-```
-
-
-```{r}
-# Adding the required R packages
+```{r Loading Packages, echo=FALSE, warning=FALSE}}
+# Loading the required R packages
 library(tidyverse)
 library(lubridate)
 library(corrplot)
@@ -34,29 +28,33 @@ library(ggalluvial)
 library(treemapify)
 ```
 
-```{r}
+```{r Adding datasets, echo=FALSE, warning=FALSE}
 # Adding datasets to R
-air_delay.df <- read_csv("airlines_delay.csv")
+airDelay.df <- read_csv("airlines_delay.csv")
 wage.df <- read_csv("wages_jobs.csv")
-occup.df <- read_csv("occupations.csv")
+occupation.df <- read_csv("occupations.csv")
 ```
 
+## Task 1
 
+### Problem Statement
+Create a density plot for all different airlines delays by calling a custom function that has transformed x-axis scale for better visualisation.
 
+### Result
 ```{r Task 1, echo=FALSE, warning=FALSE}
 # Creating a subset of airline delay dataset as defined in the problem statement
-df_air_1 <- air_delay.df %>% 
+delayTypes.df <- airDelay.df %>% 
     select(carrier_delay, 
            late_aircraft_delay, 
            nas_delay, 
            security_delay, 
            weather_delay) %>% 
     drop_na()
-task1 <- gather(df_air_1)
+delayTypes.df <- gather(delayTypes.df)
 # Defining a function to create a density plot 
-densityPlotFunc<- function(dataFrame)
+densityPlotFunc<- function(yourDataFrameName)
 {
-  densityPlot <- ggplot(dataFrame, 
+  densityPlot <- ggplot(yourDataFrameName, 
                         aes(x=value,
                             fill=key)) +
     geom_density(alpha=0.5) +
@@ -70,57 +68,88 @@ densityPlotFunc<- function(dataFrame)
 densityPlot
 }
 # Using custom function to plot for subset task1
-densityPlotFunc(task1)                                       
+densityPlotFunc(delayTypes.df)                                       
 ```
+### Conclusion
 
+## Task 2
+### Problem Statement
+Create a correlation plot for selected columns (arr_flights, arr_del15, arr_cancelled, arr_diverted, arr_delay, carrier_delay, weather_delay, nas_delay, security_delay and late_aircraft_delay) having labels properly aligned.
+
+### Result
 ```{r Task 2, echo=FALSE, warning=FALSE}
 # Creating a subset of airline delay dataset as defined in the problem statement
-task2 <- air_delay.df %>% 
+selectedColumnsAirDelay.df <- airDelay.df %>% 
   select(7:16) %>% 
   drop_na()
 # Creating a correlation matrix for subset task2
-correlationTask2 <- cor(task2)
+correlationAirDelay <- cor(selectedColumnsAirDelay.df)
 # correlation matrix plot using corrplot package
-corrplot.mixed(correlationTask2,
+corrplot.mixed(correlationAirDelay,
                lower="number",
                upper="circle",
                lower.col="black",
                tl.pos="d",
-               number.cex=0.6,
-               tl.cex=0.65)
+               number.cex=0.75,
+               tl.cex=0.31)
 ```
+### Conclusion
 
+## Task 5
+### Problem statement
+Create a stacked bar plot of Occupation vs Wage (in year 2018) on the basis of Gender as different color
+
+### Result
 ```{r Task 5, echo=FALSE, warning=FALSE}
 # Creating a subset of occupation dataset as defined in the problem statement
-task5 <- wage.df %>% 
+wageGenderOccupation.df <- wage.df %>% 
   filter(Year == 2018) %>% 
   select(`PUMS Occupation`, 
          `Average Wage`, 
          Gender) %>% 
   group_by(`PUMS Occupation`)
+wageGenderOccupation.df$`Average Wage` <- round(wageGenderOccupation.df$`Average Wage`, digits = 2)
 # stacked bar plot using ggplot package 
-ggplot(task5, aes(fill=Gender, 
+ggplot(wageGenderOccupation.df, aes(fill=Gender, 
                   y=`Average Wage`, 
                   x=reorder(`PUMS Occupation`,-`Average Wage`))) +
-  geom_bar(stat="identity") +
+  geom_bar(stat="identity", position = "fill") +
+  scale_y_continuous(labels = scales::percent_format()) +
   labs(x = "Occupation", 
        y = "Average Wage", 
        title = "Stacked Bar Plot of Gender on basis of Wages vs Occupation") +
   theme_minimal(base_size = 8) +
   theme(axis.text.x = element_text(angle = 45, 
                                    hjust = 1))
+    
+
 ```
+### Conclusion
+1. Average wage for different occupation is more for Males as compared to females for 3 categories (Aircraft Pilots and Flight engineers, Aircraft Mechanics and service technicians Flight Attendants) out of 5. Whereas 2 categories have comparable wage for both males and females.
+2. Aircraft Pilots and Flight engineers has the highest average wage.
+3. Customer services representatives has the lowest average wage. 
+
+```{r}
+wage_jobs<-read.csv("wages_jobs.csv", na.strings = "")
+df1<-wage_jobs %>% filter(Year==2018) %>% group_by(PUMS.Occupation,Gender) %>% summarise(avg_wage=sum(Average.Wage))%>%
+  mutate(percent=(avg_wage/sum(avg_wage))*100) %>% drop_na()
+df1$avg_wage<-round(df1$avg_wage,digits = 2)
+task1<- ggplot(df1,aes(y=PUMS.Occupation,percent , fill=Gender))+geom_bar(stat="identity",width=0.5)+geom_text(aes(label=avg_wage),position = position_stack(vjust=0.5, reverse = T))+
+  theme(axis.text.y = element_text(size=6)) + xlab("Average wage in percentage")+ylab("Occupation")
+task1
+```
+
 
 ```{r Task 6, echo=FALSE, warning=FALSE}
 # Creating a subset of occupation dataset as defined in the problem statement
-task6 <- occup.df %>% 
+occupdationGroupAndDetails.df <- occupation.df %>% 
   group_by(`Detailed Occupation`, 
            `Major Occupation Group`) %>% 
   summarise(Workforce=sum(`Total Population`, 
                           na.rm = TRUE), 
             .groups = "drop")
 # tree map plot using ggplot and treemapify packages
-ggplot(task6, aes(area=Workforce,
+ggplot(occupdationGroupAndDetails.df, aes(area=Workforce,
                   fill=`Major Occupation Group`,
                   label=`Detailed Occupation`,
                   subgroup=`Major Occupation Group`)) + 
@@ -162,8 +191,7 @@ ggplot(as.data.frame(wage.df), aes(y =`Total Population`, axis1 = `PUMS Occupati
   geom_alluvium(aes(fill = Gender), width = 1/12) +
   geom_stratum(width = 1/4) +
   scale_x_discrete(limits = c("Occupation", "Gender"), expand = c(.1, 0)) +
-  geom_text(stat = "stratum", aes(label = after_stat(stratum))) +
-  theme_minimal()
+  geom_text(stat = "stratum", aes(label = after_stat(stratum)), size =1.45, min.y=100)
 ```
 
 
