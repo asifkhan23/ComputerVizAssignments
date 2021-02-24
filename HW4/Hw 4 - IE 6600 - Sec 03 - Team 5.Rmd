@@ -1,14 +1,13 @@
 ---
 title: "HW 4 - IE 6600 - Sec 03 - Team 5"
 author: "Rahul Dixit, Kirti Aggarwal, Asif Khan"
-date: "2/19/2021"
+date: "2/24/2021"
 output: pdf_document
 ---
 
 ```{r Set Current Directory, echo=FALSE, warning=FALSE}
 # Set the R environment to your current directory
-#setwd("/Users/kirtiagwl1595/Desktop/Computation and Data Visualisation/Assignment/Assignment 4")
-#setwd("/Users/asif/NEU/IE-6600 - Comp Viz/Assignment/ComputerVizAssignments/HW4")
+#setwd("put_your_working_directory_having_required_datasets_of_assignment_4")
 ```
 
 ```{r Loading Packages, echo=FALSE, warning=FALSE}
@@ -18,12 +17,8 @@ library(lubridate)
 library(corrplot)
 library(gridExtra)
 library(scales)
-library(reshape2)
 library(magrittr)
 library(tidyr)
-library(ggplot2)
-library(dplyr)
-library(corrr)
 library(ggalluvial)
 library(treemapify)
 library(wesanderson)
@@ -102,7 +97,7 @@ corrplot.mixed(correlationAirDelay,
 Create a heatmap to find difference between male and female employees w.r.t to year and occupation
 
 ### Result
-```{r}
+```{r Task 3, echo=FALSE, warning=FALSE}
 wage_df_selected <- wage.df %>% select(Gender, `Slug PUMS Occupation`, `Total Population`, Year)
 wage_df_aggregated <- aggregate(wage_df_selected[,c("Total Population")], 
                 by=list(wage_df_selected$`Slug PUMS Occupation`,wage_df_selected$Gender, wage_df_selected$Year), "sum")
@@ -123,13 +118,13 @@ ggplot(wage_df_diff, aes(x=Group.3, y=Group.1, fill=Difference)) +
 As clearly seen from the graph there for the occupation of
 1. Flight attendants, there are more female employees than male employees
 2. Aircraft mechanics and Reservation Transportation, there are almost same number of male and female employees
-3. Aircraft piolts, there are more male employees than female employees
+3. Aircraft pilots, there are more male employees than female employees
 
 ## Task 4
 ### Problem statement
 Create an Alluvial Chart for Occupation and Year w.r.t Population, showing inter-relation of Gender.
 
-```{r}
+```{r Task 4, echo=FALSE, warning=FALSE}
 ggplot(as.data.frame(wage.df), aes(y =`Total Population`, axis1 = `PUMS Occupation`, axis2 = Year)) +
   geom_alluvium(aes(fill = Gender), width = 1/12) +
   geom_stratum(width = 1/4) +
@@ -160,8 +155,7 @@ wageGenderOccupation.df$`Average Wage` <- round(wageGenderOccupation.df$`Average
 ggplot(wageGenderOccupation.df, aes(fill=Gender, 
                   y=`Average Wage`, 
                   x=reorder(`PUMS Occupation`,-`Average Wage`))) +
-  geom_bar(stat="identity", position = "fill") +
-  scale_y_continuous(labels = scales::percent_format()) +
+  geom_bar(stat="identity") +
   labs(x = "Occupation", 
        y = "Average Wage", 
        title = "Stacked Bar Plot of Gender on basis of Wages vs Occupation") +
@@ -175,16 +169,6 @@ ggplot(wageGenderOccupation.df, aes(fill=Gender,
 1. Average wage for different occupation is more for Males as compared to females for 3 categories (Aircraft Pilots and Flight engineers, Aircraft Mechanics and service technicians Flight Attendants) out of 5. Whereas 2 categories have comparable wage for both males and females.
 2. Aircraft Pilots and Flight engineers has the highest average wage.
 3. Customer services representatives has the lowest average wage. 
-
-```{r}
-wage_jobs<-read.csv("wages_jobs.csv", na.strings = "")
-df1<-wage_jobs %>% filter(Year==2018) %>% group_by(PUMS.Occupation,Gender) %>% summarise(avg_wage=sum(Average.Wage))%>%
-  mutate(percent=(avg_wage/sum(avg_wage))*100) %>% drop_na()
-df1$avg_wage<-round(df1$avg_wage,digits = 2)
-task1<- ggplot(df1,aes(y=PUMS.Occupation,percent , fill=Gender))+geom_bar(stat="identity",width=0.5)+geom_text(aes(label=avg_wage),position = position_stack(vjust=0.5, reverse = T))+
-  theme(axis.text.y = element_text(size=6)) + xlab("Average wage in percentage")+ylab("Occupation")
-task1
-```
 
 
 ```{r Task 6, echo=FALSE, warning=FALSE}
@@ -206,5 +190,11 @@ ggplot(occupdationGroupAndDetails.df, aes(area=Workforce,
                         colour = "white",
                         place = "centre",
                         grow = F,
-                        reflow = T) 
+                        reflow = T) +
+  theme(legend.title = element_text(size = 5), 
+        legend.text = element_text(size = 5))
 ```
+
+### Conclusion
+1. Service Occupation is the subgroup where maximum number of people work.
+2. Natural Resources, construction and maintenance occupation is the subgroup where least number of people work.
