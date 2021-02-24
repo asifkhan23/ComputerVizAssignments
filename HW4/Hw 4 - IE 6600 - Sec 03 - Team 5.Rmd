@@ -11,7 +11,7 @@ output: pdf_document
 #setwd("/Users/asif/NEU/IE-6600 - Comp Viz/Assignment/ComputerVizAssignments/HW4")
 ```
 
-```{r Loading Packages, echo=FALSE, warning=FALSE}}
+```{r Loading Packages, echo=FALSE, warning=FALSE}
 # Loading the required R packages
 library(tidyverse)
 library(lubridate)
@@ -115,6 +115,7 @@ ggplot(wage_df_diff, aes(x=Group.3, y=Group.1, fill=Difference)) +
   xlab("Years") +
   ylab("Occupation") +
   ggtitle("Difference between Male and Felmale Employees") +
+  
   scale_fill_gradientn(colors=wes_palette( "Zissou1", 100, type = "continuous")) +
   theme_minimal()
 ```
