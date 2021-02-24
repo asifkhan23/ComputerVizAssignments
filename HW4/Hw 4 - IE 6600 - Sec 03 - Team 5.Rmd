@@ -95,6 +95,47 @@ corrplot.mixed(correlationAirDelay,
 ```
 ### Conclusion
 
+
+## Task 3
+### Problem statement
+### From wages_jobs.csv generate a heat map as shown below. The variable Difference is defined as the difference between number of male employees and the number of female employees. A negative value indicate more number of female than male employees. In addition to the plot critique the below visualization:
+
+### • Transform the x axis using a log10 to better visualize the data spread.
+
+```{r}
+library(wesanderson)
+wage_df_selected <- wage.df %>% select(Gender, `Slug PUMS Occupation`, `Total Population`, Year)
+wage_df_aggregated <- aggregate(wage_df_selected[,c("Total Population")], 
+                by=list(wage_df_selected$`Slug PUMS Occupation`,wage_df_selected$Gender, wage_df_selected$Year), "sum")
+wage_df_pivoted <- pivot_wider(data = wage_df_aggregated, names_from = Group.2, values_from =`Total Population`)
+wage_df_diff <- wage_df_pivoted %>%
+  mutate(Difference = Male-Female) # A negative value indicate more number of female than male employees
+ggplot(wage_df_diff, aes(x=Group.3, y=Group.1, fill=Difference)) + 
+  geom_tile() +
+  scale_y_discrete(labels = function(x) str_wrap(x, width=10)) +
+  xlab("Years") +
+  ylab("Occupation") +
+  ggtitle("Difference between Male and Felmale Employees") +
+  scale_fill_gradientn(colors=wes_palette( "Zissou1", 100, type = "continuous")) +
+  theme_minimal()
+```
+
+
+## Task 4
+### Problem statement
+### From wages_jobs.csv generate the following alluvial chart.
+
+```{r}
+ggplot(as.data.frame(wage.df), aes(y =`Total Population`, axis1 = `PUMS Occupation`, axis2 = Year)) +
+  geom_alluvium(aes(fill = Gender), width = 1/12) +
+  geom_stratum(width = 1/4) +
+  scale_x_discrete(limits = c("Occupation", "Gender"), expand = c(.1, 0)) +
+  geom_text(stat = "stratum", aes(label = after_stat(stratum)), size =1.45, min.y=100) +
+  theme_minimal()
+```
+### Conclusion
+
+
 ## Task 5
 ### Problem statement
 Create a stacked bar plot of Occupation vs Wage (in year 2018) on the basis of Gender as different color
@@ -161,37 +202,3 @@ ggplot(occupdationGroupAndDetails.df, aes(area=Workforce,
                         grow = F,
                         reflow = T) 
 ```
-
-## Task 3
-### From wages_jobs.csv generate a heat map as shown below. The variable Difference is defined as the difference between number of male employees and the number of female employees. A negative value indicate more number of female than male employees. In addition to the plot critique the below visualization:
-
-### • Transform the x axis using a log10 to better visualize the data spread.
-
-```{r}
-
-wage.df %>% 
-  filter(Gender == "Female") %>% 
-  summarise(noOfFemales = n())
-
-wage.df %>% 
-  filter(Gender == "Male") %>% 
-  summarise(noOfMales = n())
-
-ggplot(data = as.data.frame(wage.df), aes(x=Year, y=`PUMS Occupation`, fill = Gender)) + 
-        geom_tile()
-
-```
-
-## Task 4
-### From wages_jobs.csv generate the following alluvial chart.
-### • Read documentation of geom_alluvial and geom_stratum to solve this task
-
-```{r}
-ggplot(as.data.frame(wage.df), aes(y =`Total Population`, axis1 = `PUMS Occupation`, axis2 = Year)) +
-  geom_alluvium(aes(fill = Gender), width = 1/12) +
-  geom_stratum(width = 1/4) +
-  scale_x_discrete(limits = c("Occupation", "Gender"), expand = c(.1, 0)) +
-  geom_text(stat = "stratum", aes(label = after_stat(stratum)), size =1.45, min.y=100)
-```
-
-
