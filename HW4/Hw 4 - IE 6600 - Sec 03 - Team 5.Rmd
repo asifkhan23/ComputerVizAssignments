@@ -26,6 +26,7 @@ library(dplyr)
 library(corrr)
 library(ggalluvial)
 library(treemapify)
+library(wesanderson)
 ```
 
 ```{r Adding datasets, echo=FALSE, warning=FALSE}
@@ -98,12 +99,10 @@ corrplot.mixed(correlationAirDelay,
 
 ## Task 3
 ### Problem statement
-### From wages_jobs.csv generate a heat map as shown below. The variable Difference is defined as the difference between number of male employees and the number of female employees. A negative value indicate more number of female than male employees. In addition to the plot critique the below visualization:
+Create a heatmap to find difference between male and female employees w.r.t to year and occupation
 
-### • Transform the x axis using a log10 to better visualize the data spread.
-
+### Result
 ```{r}
-library(wesanderson)
 wage_df_selected <- wage.df %>% select(Gender, `Slug PUMS Occupation`, `Total Population`, Year)
 wage_df_aggregated <- aggregate(wage_df_selected[,c("Total Population")], 
                 by=list(wage_df_selected$`Slug PUMS Occupation`,wage_df_selected$Gender, wage_df_selected$Year), "sum")
@@ -119,21 +118,27 @@ ggplot(wage_df_diff, aes(x=Group.3, y=Group.1, fill=Difference)) +
   scale_fill_gradientn(colors=wes_palette( "Zissou1", 100, type = "continuous")) +
   theme_minimal()
 ```
-
+### Conclusion
+As clearly seen from the graph there for the occupation of
+1. Flight attendants, there are more female employees than male employees
+2. Aircraft mechanics and Reservation Transportation, there are almost same number of male and female employees
+3. Aircraft piolts, there are more male employees than female employees
 
 ## Task 4
 ### Problem statement
-### From wages_jobs.csv generate the following alluvial chart.
+Create an Alluvial Chart for Occupation and Year w.r.t Population, showing inter-relation of Gender.
 
 ```{r}
 ggplot(as.data.frame(wage.df), aes(y =`Total Population`, axis1 = `PUMS Occupation`, axis2 = Year)) +
   geom_alluvium(aes(fill = Gender), width = 1/12) +
   geom_stratum(width = 1/4) +
-  scale_x_discrete(limits = c("Occupation", "Gender"), expand = c(.1, 0)) +
+  scale_x_discrete(limits = c("Occupation", "Year"), expand = c(.1, 0)) +
   geom_text(stat = "stratum", aes(label = after_stat(stratum)), size =1.45, min.y=100) +
   theme_minimal()
 ```
 ### Conclusion
+1. There are more male employees from the year 2014 to 2018 having an occupation in Aircraft Mechanics, Pilots.
+2. There are more female employees from the year 2014 to 2018 having an occupation in Customer service, Flight Attendants and reservation transportation.
 
 
 ## Task 5
