@@ -66,7 +66,9 @@ densityPlot
 # Using custom function to plot for subset task1
 densityPlotFunc(delayTypes.df)                                       
 ```
+
 ### Conclusion
+From the plot we can see that security delay has the highest density and the carrier delay has a higher spread compared to the rest of the delays
 
 ## Task 2
 ### Problem Statement
@@ -89,8 +91,9 @@ corrplot.mixed(correlationAirDelay,
                number.cex=0.75,
                tl.cex=0.31)
 ```
-### Conclusion
 
+### Conclusion
+From the graph we can conclude that aircraft delay and total delay is the most correlated feature with the correlation value of 0.97.The least correlation is between canceled delay and security delay with a value of 0.24.
 
 ## Task 3
 ### Problem statement
@@ -114,8 +117,10 @@ ggplot(wage_df_diff, aes(x=Group.3, y=Group.1, fill=Difference)) +
   scale_fill_gradientn(colors=wes_palette( "Zissou1", 100, type = "continuous")) +
   theme_minimal()
 ```
+
 ### Conclusion
 As clearly seen from the graph there for the occupation of
+
 1. Flight attendants, there are more female employees than male employees
 2. Aircraft mechanics and Reservation Transportation, there are almost same number of male and female employees
 3. Aircraft pilots, there are more male employees than female employees
@@ -132,6 +137,7 @@ ggplot(as.data.frame(wage.df), aes(y =`Total Population`, axis1 = `PUMS Occupati
   geom_text(stat = "stratum", aes(label = after_stat(stratum)), size =1.45, min.y=100) +
   theme_minimal()
 ```
+
 ### Conclusion
 1. There are more male employees from the year 2014 to 2018 having an occupation in Aircraft Mechanics, Pilots.
 2. There are more female employees from the year 2014 to 2018 having an occupation in Customer service, Flight Attendants and reservation transportation.
@@ -165,12 +171,17 @@ ggplot(wageGenderOccupation.df, aes(fill=Gender,
     
 
 ```
+
 ### Conclusion
 1. Average wage for different occupation is more for Males as compared to females for 3 categories (Aircraft Pilots and Flight engineers, Aircraft Mechanics and service technicians Flight Attendants) out of 5. Whereas 2 categories have comparable wage for both males and females.
 2. Aircraft Pilots and Flight engineers has the highest average wage.
 3. Customer services representatives has the lowest average wage. 
 
+## Task 6
+### Problem statement
+Create a tree map in which area of each rectangle (Major Occupation Group) is proportional to the number of people working in that Detailed Occupation.
 
+### Result
 ```{r Task 6, echo=FALSE, warning=FALSE}
 # Creating a subset of occupation dataset as defined in the problem statement
 occupdationGroupAndDetails.df <- occupation.df %>% 
@@ -194,6 +205,7 @@ ggplot(occupdationGroupAndDetails.df, aes(area=Workforce,
   theme(legend.title = element_text(size = 5), 
         legend.text = element_text(size = 5))
 ```
+
 
 ### Conclusion
 1. Service Occupation is the subgroup where maximum number of people work.
